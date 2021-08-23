@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: gloo-system
+  name: {{.ServiceName}}
+  labels:
+    app: {{.ServiceName}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.ServiceName}}
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: {{.ServiceName}}
+    spec:
+      containers:
+        - name: {{.ServiceName}}
+          image: rksmannem/{{.ServiceName}}:{{.Release}}
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: API_PORT
+              value: "8000"

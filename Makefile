@@ -35,12 +35,13 @@ test:
 
 push-image: docker-image
 	docker push $(DOCKER_IMAGE_NAME):$(RELEASE)
+	#docker push <REGISTRY_HOST>:<REGISTRY_PORT>/<APPNAME>:<APPVERSION>
 
-#minikube: push
-#	for t in $(shell find ./kubernetes/advent -type f -name "*.yaml"); do \
-#        cat $$t | \
-#        	gsed -E "s/\{\{(\s*)\.Release(\s*)\}\}/$(RELEASE)/g" | \
-#        	gsed -E "s/\{\{(\s*)\.ServiceName(\s*)\}\}/$(APP)/g"; \
-#        echo ---; \
-#    done > tmp.yaml
-#	kubectl apply -f tmp.yaml
+deploy: push-image
+	for t in $(shell find ./k8s -type f -name "*.yaml"); do \
+        cat $$t | \
+        	sed -E "s/\{\{\.ServiceName\}\}/${APP}/g" | \
+        	sed -E "s/\{\{\.Release\}\}/${RELEASE}/g"; \
+        echo "\n---"; \
+    done > tmp.yaml
+	kubectl apply -f tmp.yaml
