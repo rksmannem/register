@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 )
 
 // Home returns a simple HTTP handler function which writes a response.
-func Home(buildTime, commit, release string) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+func Home(lgr *zap.Logger, buildTime, commit, release string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		info := struct {
 			BuildTime string `json:"buildTime"`
 			Commit    string `json:"commit"`
@@ -17,6 +18,7 @@ func Home(buildTime, commit, release string) http.HandlerFunc {
 			buildTime, commit, release,
 		}
 
+		lgr.Info("Home handler")
 		body, err := json.Marshal(info)
 		if err != nil {
 			log.Printf("Could not encode info data: %v", err)

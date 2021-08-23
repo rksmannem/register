@@ -1,11 +1,11 @@
 PROJECT?=github.com/rksmannem/register
 APP?=registerd
-PORT?=8000
+API_PORT?=8000
 
 RELEASE?=v0.1.0
 COMMIT?=$(shell git rev-parse --short HEAD)
 BUILD_TIME?=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
-DOCKER_IMAGE_NAME?=docker.io/rksmannem/${APP}
+DOCKER_IMAGE_NAME?=rksmannem/${APP}
 
 GOOS?=linux
 GOARCH?=amd64
@@ -26,9 +26,9 @@ docker-image: build
 
 run-container: docker-image
 	docker stop $(APP):$(RELEASE) || true && docker rm $(APP):$(RELEASE) || true
-	docker run --name ${APP} -p ${PORT}:${PORT} --rm \
-		-e "PORT=${PORT}" \
-		$(APP):$(RELEASE)
+	docker run --name ${APP} -p ${API_PORT}:${API_PORT} --rm \
+		-e "API_PORT=${API_PORT}" \
+		$(DOCKER_IMAGE_NAME):$(RELEASE)
 
 test:
 	go test -v -race ./...

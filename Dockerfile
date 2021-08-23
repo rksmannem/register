@@ -6,12 +6,17 @@ WORKDIR /app
 #ADD . /app
 COPY . .
 
-ARG CGO_ENABLED=0
-ARG GOOS=linux
+ENV CGO_ENABLED=0
+
+ARG TARGETOS=linux
+ARG PROJECT=register
 ARG APP=registerd
+ARG RELEASE=v0.1.0
 
-RUN go build -a -o registerd ./cmd/registerd
-
+#RUN go build -a -o registerd ./cmd/registerd
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} go build -a -work \
+    		-ldflags "-s -w -X ${PROJECT}/version.Release=${RELEASE}" \
+    		-o ${APP}  ./cmd/registerd
 
 FROM scratch
 
